@@ -54,6 +54,12 @@ class HandPosition {
   }
 
   // measurements
+  get empty() {
+    for(let {fret} of this.fingers)
+      if(fret != null)
+        return false
+    return true
+  }
   get lowestFrettedFinger() {
     for(let finger of this.fingers)
       if(finger.fret != null)
@@ -118,6 +124,20 @@ class HandPosition {
 
     return out
   }
+  fretsAndFingersByString(numberOfStrings=6) {
+    let byString = new Array(numberOfStrings).fill(null)
+    for(let string of this.openStrings)
+      byString[string] = {fret:0, fingerNumber:null}
+
+    for(let n=0; n<this.fingers.length; n++) {
+      let finger = this.fingers[n]
+      let {fret, string} = finger
+      if(fret != null && (!byString[string] || fret > byString[string].fret))
+        byString[finger.string] = {fret: fret, fingerNumber: n}
+    }
+
+    return byString
+  }
   lilypondFretDiagram(numberOfStrings=6) {
     let byString = []
     for(let n=0; n<this.fingers.length; n++) {
@@ -129,7 +149,7 @@ class HandPosition {
 
     for(let string=0; string<numberOfStrings; string++)
       if(byString[string])
-        byString[string] = byString[string].fret + '-' + byString[string].fingerNumber
+        byString[string] = byString[string].fret + '-' + (byString[string].fingerNumber+1)
       else {
         if(this.openStrings.includes(string))
           byString[string] = 'o'

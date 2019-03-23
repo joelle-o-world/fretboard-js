@@ -93,41 +93,9 @@ function getPitchClassSet(handPosition, tuning=standardEADGBE) {
   return op.sort((A,B) => A-B)
 }
 
-function handPositionToLilypond(
-  handPosition,
-  tuning=standardEADGBE,
-  //noteValue=1 // 2:minim, 4:crotchet, etc
-) {
-  let pitchFingerings = []
-  for(let i=0; i<handPosition.fingers.length; i++) {
-    let finger = handPosition.fingers[i]
-    if(finger.fret == null)
-      continue
-
-    pitchFingerings.push({
-      pitch: finger.fret + tuning[finger.string],
-      fingering: i+1,
-    })
-  }
-  for(let string of handPosition.openStrings)
-    pitchFingerings.push({
-      pitch: tuning[string],
-      fingering: 0,
-    })
-
-  let notes = pitchFingerings
-    .sort((A, B) => A.pitch-B.pitch)
-    .map(
-      ({pitch, fingering}) =>
-        lp.printPitch(pitch) + '^' + fingering
-    )
-
-  return '< ' + notes.join(' ') + ' >'
-}
 
 module.exports = {
   randomHandPosition: randomHandPosition,
   getChord: getChord,
-  lilypond: handPositionToLilypond,
   getPitchClassSet: getPitchClassSet,
 }

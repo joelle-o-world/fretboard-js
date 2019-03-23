@@ -6,7 +6,9 @@ const argv = require('minimist')(process.argv.slice(2))
 const { getReachableFrets,
         getReachableFingerPositions,
         singleFingerMoves} = require('./src/move')
-const lilypond = reqiire("./src/lilypond")
+const allHandMoves = require('./src/allHandMoves')
+const lilypond = require('./src/lilypond')
+
 let lines = []
 
 
@@ -17,11 +19,11 @@ lines.push(
   '\\bar "||" \\break'
 )
 
-let allShifts = singleFingerMoves(shape)
+let allShifts = allHandMoves(shape)
 for(let position of allShifts) {
 //  let position = fretShift.random(shape)
-  if(position.lowestFret <= 0) {
-    console.log(position)
+  if(!position.empty &&position.lowestFret <= 0) {
+    console.log(position, position.lowestFret)
     throw "Waah"
   }
   let lily = lilypond.handPosition(position) + '1'

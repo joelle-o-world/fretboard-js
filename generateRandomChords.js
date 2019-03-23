@@ -3,6 +3,7 @@ const fretShift = require('./src/fretShift')
 //const Chord = require('./src/Chord')
 const fs = require('fs')
 const argv = require('minimist')(process.argv.slice(2))
+const lilypond = require("./src/lilypond")
 
 let lines = []
 
@@ -15,7 +16,7 @@ for(let i=0; i<n; i++) {
       console.log(position)
       throw "Waah"
     }
-    let lily = guitar.lilypond(position) + '1'
+    let lily = lilypond.handPosition(position) + '1'
     lily += '^' + position.lilypondFretDiagram()
   /*  let chord = Chord.fromOctaveProfile(guitar.getPitchClassSet(position))
     if(chord != '?')

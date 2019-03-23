@@ -77,7 +77,7 @@ function getReachableFrets(
       break
     }
 
-
+  // get values for right adjacent fret
   let rightFinger=null, rightFret=null
   for(let i=n+1; i<fingers.length; i++)
     if(fingers[i].fret != null) {
@@ -88,7 +88,7 @@ function getReachableFrets(
 
 
   // compute minimum/maximum frets
-  let min = 0
+  let min = 1
   let max = numberOfFrets
 
   // reduce range so as not to overstretch or overlap with left finger

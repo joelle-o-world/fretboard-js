@@ -1,4 +1,5 @@
 const pitch = require('./pitch')
+const standardEADGBE = [40, 45, 50, 55, 59, 64]
 
 const pitchclasses_flat = [
   'c', 'des', 'd', 'ees', 'e', 'f', 'ges', 'g', 'aes', 'a', 'bes', 'b']
@@ -24,6 +25,26 @@ function printPitch(midiPitchNumber, accidentalType='flat') {
     return letter + ','.repeat(-octave)
 }
 
+function handPositionToLilypond(position, tuning=standardEADGBE) {
+  // get frets and fingers by string
+  let byString = position.fretsAndFingersByString().filter(o => o)
+
+  // convert frets to pitches
+  for(let string=0; string<byString.length; string++)
+    byString[string].pitch = tuning[string] + byString[string].fret
+
+  let notes = byString.map(
+    ({pitch, fingerNumber}) => printPitch(pitch) + '-' +
+                                (fingerNumber!=null ? fingerNumber+1 : '0')
+  )
+
+  if(notes.length)
+    return '< ' + notes.join(' ') + ' >'
+  else
+    return 'r'
+}
+
 module.exports = {
-  printPitch: printPitch,
+  pitch: printPitch,
+  handPosition: handPositionToLilypond,
 }

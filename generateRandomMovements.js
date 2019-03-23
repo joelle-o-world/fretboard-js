@@ -1,27 +1,31 @@
 const guitar = require('./src/guitar')
 const fretShift = require('./src/fretShift')
 //const Chord = require('./src/Chord')
+const lilypond = require('./src/lilypond')
 const fs = require('fs')
 const argv = require('minimist')(process.argv.slice(2))
 const { getReachableFrets,
         getReachableFingerPositions,
         singleFingerMoves} = require('./src/move')
-const lilypond = reqiire("./src/lilypond")
+const allHandMoves = require('./src/allHandMoves')
+
 let lines = []
 
 
 let shape = guitar.randomHandPosition()
+shape.openStrings = [0,1,2,3,4,5]
 
-lines.push(
+/*lines.push(
   lilypond.handPosition(shape) + '1' + '^' + shape.lilypondFretDiagram(),
   '\\bar "||" \\break'
-)
+)*/
 
-let allShifts = singleFingerMoves(shape)
-for(let position of allShifts) {
-//  let position = fretShift.random(shape)
-  if(position.lowestFret <= 0) {
-    console.log(position)
+let position = shape
+for(let i=0; i<100; i++) {
+  position = allHandMoves.random(position)
+  //position.openStrings = [0,1,2,3,4,5]
+  if(!position.empty &&position.lowestFret <= 0) {
+    console.log(position, position.lowestFret)
     throw "Waah"
   }
   let lily = lilypond.handPosition(position) + '1'
@@ -35,11 +39,14 @@ for(let position of allShifts) {
 
 lines = [
   "\\version \"2.18.2\"",
-//  "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
+  "\\new Voice {",
+//  "\\override TextScript.size = #'1.2",
+  "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
+  //"\\override TextScript.fret-diagram-details.dot-color = #'white",
   "\\absolute {",
   "\t\\clef \"treble_8\"",
   lines.join('\n\t'),
-  "}"
+  "}}",
 ]
 
 if(argv.o)

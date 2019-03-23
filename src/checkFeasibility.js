@@ -1,0 +1,39 @@
+// Check wether a given hand position is feasible
+
+function checkFeasibility(position, {
+  maxFingerStretch = 2,
+  minFingerStretch = 0,
+  maxHandStretch = 3
+}={}) {
+  // check overall hand stretch
+  let width = position.width
+  if(width > maxHandStretch || width < 0)
+    return false
+
+  // check adjacent finger stretches
+  // check for finger overlaps
+  for(let n=1; n<position.fingers; n++) {
+    let A = position.fingers[n-1].fret
+    let B = position.fingers[n].fret
+    let stretch = B-A
+    if(A == null || B == null)
+      continue
+    else if(stretch < minFingerStretch || stretch > maxFingerStretch)
+      return false
+  }
+
+  // check for fingers on the same string
+  let stringTaken = []
+  for(let {string} of position.fingers) {
+    if(string == null)
+      continue
+    else if(stringTaken[string])
+      return false
+    else
+      stringTaken[string] = true
+  }
+
+  // if we survived this far then it is feasible
+  return true
+}
+module.exports = checkFeasibility
