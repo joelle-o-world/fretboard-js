@@ -9,8 +9,9 @@ let lines = []
 const n = 10
 for(let i=0; i<n; i++) {
   let shape = guitar.randomHandPosition()
-  for(let j=0; j<8; j++) {
-    let position = fretShift.random(shape)
+  let allShifts = fretShift.all(shape)
+  for(let position of allShifts) {
+  //  let position = fretShift.random(shape)
     if(position.lowestFret <= 0) {
       console.log(position)
       throw "Waah"

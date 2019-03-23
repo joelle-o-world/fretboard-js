@@ -1,8 +1,43 @@
+const HandPosition = require('./HandPosition')
 const {getHighestFrettedFinger, getLowestFrettedFinger} = require('./range.js')
 
-function getReachableFingerPositions(handPosition, fingerNumber, options) {
+function singleFingerMoves(handPosition, options) {
+  let list = []
+  for(let finger=0; finger < handPosition.fingers.length; finger++) {
+    let fingerPositions = getReachableFingerPositions(handPosition, finger, options)
+    for(let to of fingerPositions)
+      list.push(handPosition.moveFinger(finger, to))
+  }
 
-  let frets = getReachableFrets(handPosition, fingerNumber, options={})
+  return list
+}
+
+module.exports.singleFingerMoves = singleFingerMoves
+
+function getMovesForFinger(handPosition, fingerNumber, options={}) {
+  // list the moves a single finger can make
+  let finger = handPosition.fingers[fingerNumber]
+  if(handPosition.fingers[fingerNumber].fret == null)
+    // a lifted finger may remain lifted, or may be placed in any reachable position
+    return [
+      {fret: null, string: null},
+      ...getReachableFingerPositions(handPosition, fingerNumber, options),
+    ]
+  else if(handPosition.fingers) {
+    // a placed finger may remain where it is or be lifted
+    return [
+      {fret: finger.fret, string:finger.string},
+      {fret: null, string: null},
+    ]
+  }
+}
+module.exports.getMovesForFinger = getMovesForFinger
+
+function getReachableFingerPositions(handPosition, fingerNumber, options={}) {
+  if(!(handPosition instanceof HandPosition))
+    throw 'getReachableFingerPositions expects a HandPosition'
+
+  let frets = getReachableFrets(handPosition, fingerNumber, options)
   let {numberOfStrings = 6} = options
 
   let list = []
@@ -27,6 +62,9 @@ function getReachableFrets(
 ) {
   // Generator function yielding the fret numbers reachable by a given finger
   // in a given hand position.
+
+  if(!(handPosition instanceof HandPosition))
+    throw 'getReachableFrets expects a HandPosition'
 
   const {fingers} = handPosition
 

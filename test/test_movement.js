@@ -1,5 +1,8 @@
 const guitar = require('../src/guitar.js')
-const {getReachableFrets, getReachableFingerPositions} = require('../src/getMoves')
+const HandPosition = require('../src/HandPosition')
+const { getReachableFrets,
+        getReachableFingerPositions,
+        singleFingerMoves} = require('../src/move')
 
 let position1 = guitar.randomHandPosition()
 let position0 = {
@@ -20,11 +23,7 @@ let fingerPositions = getReachableFingerPositions(position1, fingerNum)
 console.log('reachable:', fingerPositions)*/
 
 function buildChord() {
-  let position = {
-    fingers:[ {fret: null, string:null},{fret: null, string:null},
-              {fret: null, string:null},{fret: null, string:null}],
-    openStrings: []
-  }
+  let position = HandPosition.empty()
 
   for(let finger=0; finger<4; finger++) {
     let options = getReachableFingerPositions(position, finger)
@@ -37,3 +36,7 @@ function buildChord() {
 
 let chord = buildChord()
 console.log(chord)
+console.log(chord.lilypondFretDiagram())
+
+let moves = singleFingerMoves(chord)
+console.log(moves)

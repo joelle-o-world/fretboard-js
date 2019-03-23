@@ -9,7 +9,7 @@ function randomHandPosition({
   numberOfFingers = 4,
   minFingerStretch = 0, // in frets
   maxFingerStretch = 2, // in frets
-  maxHandStretch = 3, // in frets
+  maxHandStretch = 2, // in frets
   numberOfStrings = 6,
   numberOfFrets = 12,
   pOmitFinger = 1/10, // probability of omitting each finger
@@ -62,74 +62,15 @@ function randomHandPosition({
     .filter(() => Math.random() < pOpenString)
     .sort((A, B) => A-B)
 
-  new HandPosition({
+  return new HandPosition({
     fingers: fingers,
     openStrings:openStrings
   })
 }
 
-function fretShiftHandPosition(handPosition, fretShift=0) {
-  let fingers = []
-  for(let {fret, string} of handPosition.fingers) {
-    if(fret)
-      fingers.push({fret: fret+fretShift, string: string})
-    else
-      fingers.push({fret: null, string: null})
-  }
-
-  return new HandPosition({
-    fingers: fingers,
-    openStrings: handPosition.openStrings.slice(),
-  })
-}
-
-function getStretch({fingers}) {
-  let min, max
-  for(let {fret} of fingers) {
-    if(fret != null) {
-      if(min == null || fret < min)
-        min = fret
-      if(max == null || fret > max)
-        max = fret
-    }
-  }
-
-  if(min == null || max == null)
-    return null
-  else
-    return max-min
-}
-function getPosition({fingers}) {
-  for(let {fret} of fingers)
-    if(fret != null)
-      return fret
-}
-
-function randomShift(handPosition, numberOfFrets=12) {
-  let width = getStretch(handPosition)
-  let position = getPosition(handPosition)
-
-  let newPosition = Math.floor(Math.random()*(numberOfFrets-width))
-  let shift = newPosition-position
-
-  return fretShiftHandPosition(handPosition, shift)
-}
-
-function fretsByString({openStrings, fingers}, numberOfStrings=6) {
-  let out = new Array(numberOfStrings).fill(null)
-  for(let string of openStrings) {
-    out[string] = 0
-  }
-  for(let {fret, string} of fingers)
-    if(fret != null)
-      out[string] = fret
-
-  return out
-}
-
 function getChord(handPosition, tuning=standardEADGBE) {
   // get a list of midi-pitches given a hand position and a midi-pitch-tuning
-  let tab = fretsByString(handPosition)
+  let tab = handPosition.fretsByString
   let chord = []
   for(let i in tab) {
     if(tab[i] == null || tuning[i] == null)
@@ -186,11 +127,7 @@ function handPositionToLilypond(
 
 module.exports = {
   randomHandPosition: randomHandPosition,
-  fretShift: fretShiftHandPosition,
-  randomShift: randomShift,
-  fretsByString: fretsByString,
   getChord: getChord,
   lilypond: handPositionToLilypond,
   getPitchClassSet: getPitchClassSet,
-  getStretch: getStretch,
 }
