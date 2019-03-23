@@ -89,6 +89,23 @@ class HandPosition {
       return null
   }
 
+  get liftedFingerNumbers() {
+    let list = []
+    for(let i=0; i<this.fingers.length; i++)
+      if(this.fingers[i].fret == null)
+        list.push(i)
+
+    return list
+  }
+  get placedFingerNumbers() {
+    let list = []
+    for(let i=0; i<this.fingers.length; i++)
+      if(this.fingers[i].fret != null)
+        list.push(i)
+
+    return list
+  }
+
   // formatting
   fretsByString(numberOfStrings=6) {
     let out = new Array(numberOfStrings).fill(null)
