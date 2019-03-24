@@ -68,34 +68,8 @@ function randomHandPosition({
   })
 }
 
-function getChord(handPosition, tuning=standardEADGBE) {
-  // get a list of midi-pitches given a hand position and a midi-pitch-tuning
-  let tab = handPosition.fretsByString
-  let chord = []
-  for(let i in tab) {
-    if(tab[i] == null || tuning[i] == null)
-      continue
-
-    chord.push(tab[i] + tuning[i])
-  }
-
-  return chord
-}
-
-function getPitchClassSet(handPosition, tuning=standardEADGBE) {
-  let chord = getChord(handPosition, tuning)
-  let op = []
-  for(let p of chord) {
-    let pc = pitch.pc(p)
-    if(!op.includes(pc))
-      op.push(pc)
-  }
-  return op.sort((A,B) => A-B)
-}
-
-
 module.exports = {
   randomHandPosition: randomHandPosition,
-  getChord: getChord,
-  getPitchClassSet: getPitchClassSet,
+//  getChord: require('./chord.js').getPitchSet,
+//  getPitchClassSet: require("./chord.js").getPitchClassSet,
 }

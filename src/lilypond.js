@@ -1,5 +1,6 @@
 const pitch = require('./pitch')
 const standardEADGBE = [40, 45, 50, 55, 59, 64]
+const {getChord} = require('./chord')
 
 const pitchclasses_flat = [
   'c', 'des', 'd', 'ees', 'e', 'f', 'ges', 'g', 'aes', 'a', 'bes', 'b']
@@ -44,7 +45,38 @@ function handPositionToLilypond(position, tuning=standardEADGBE) {
     return 'r'
 }
 
+
+function lilypondChordSheet(positions, tuning=standardEADGBE) {
+  // Generate lilypond source code for a chord sheet of a given set of positions
+  let lines = []
+  for(let position of positions) {
+    let lily = handPositionToLilypond(position, tuning) + '1' // chord as minim
+    lily += '^' + position.lilypondFretDiagram()
+    let chord = getChord(position, tuning)
+    if(chord)
+      lily += '^"' + chord.print + '"'
+    lines.push(lily, '\\bar "||"')
+  }
+
+  lines = [
+    "\\version \"2.18.2\"",
+    "\\score {",
+    "\\new Voice {",
+    "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
+    "\\absolute {",
+    "\t\\clef \"treble_8\"",
+    ...lines,
+    "}}",
+    "\\layout {}",
+    "\\midi {}",
+    "}",
+  ]
+
+  return lines.join('\n')
+}
+
 module.exports = {
   pitch: printPitch,
   handPosition: handPositionToLilypond,
+  sheet: lilypondChordSheet
 }

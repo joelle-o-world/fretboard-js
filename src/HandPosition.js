@@ -40,6 +40,8 @@ class HandPosition {
     return true
   }
 
+  // pitch
+
   // movement
   liftFinger(fingerNumber) {
     let copy = this.duplicate()
@@ -115,10 +117,10 @@ class HandPosition {
   // formatting
   fretsByString(numberOfStrings=6) {
     let out = new Array(numberOfStrings).fill(null)
-    for(let string of openStrings)
+    for(let string of this.openStrings)
       out[string] = 0
 
-    for(let {fret, string} of fingers)
+    for(let {fret, string} of this.fingers)
       if(fret != null && (!out[string] || fret > out[string]))
         out[string] = fret
 

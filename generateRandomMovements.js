@@ -8,50 +8,22 @@ const { getReachableFrets,
         getReachableFingerPositions,
         singleFingerMoves} = require('./src/move')
 const allHandMoves = require('./src/allHandMoves')
+const HandPosition = require('./src/HandPosition')
 
 let lines = []
 
 
-let shape = guitar.randomHandPosition()
-shape.openStrings = [0,1,2,3,4,5]
+let positions = [HandPosition.empty()]
 
-/*lines.push(
-  lilypond.handPosition(shape) + '1' + '^' + shape.lilypondFretDiagram(),
-  '\\bar "||" \\break'
-)*/
+for(let i=1; i<16; i++)
+  positions[i] = allHandMoves.random(positions[i-1])
 
-let position = shape
-for(let i=0; i<100; i++) {
-  position = allHandMoves.random(position)
-  //position.openStrings = [0,1,2,3,4,5]
-  if(!position.empty &&position.lowestFret <= 0) {
-    console.log(position, position.lowestFret)
-    throw "Waah"
-  }
-  let lily = lilypond.handPosition(position) + '1'
-  lily += '^' + position.lilypondFretDiagram()
-/*  let chord = Chord.fromOctaveProfile(guitar.getPitchClassSet(position))
-  if(chord != '?')
-    lily += ' _"(' + chord.print+')"'*/
 
-  lines.push(lily, '\\bar "||"')
-}
-
-lines = [
-  "\\version \"2.18.2\"",
-  "\\new Voice {",
-//  "\\override TextScript.size = #'1.2",
-  "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
-  //"\\override TextScript.fret-diagram-details.dot-color = #'white",
-  "\\absolute {",
-  "\t\\clef \"treble_8\"",
-  lines.join('\n\t'),
-  "}}",
-]
+let lySource = lilypond.sheet(positions.slice(1))
 
 if(argv.o)
-  fs.writeFileSync(argv.o, lines.join('\n'))
+  fs.writeFileSync(argv.o, lySource)
 else {
-  console.log(lines.join('\n'))
+  console.log(lySource)
   console.log('Please use -o flag to output file')
 }
