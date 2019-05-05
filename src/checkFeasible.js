@@ -1,6 +1,6 @@
 // Check wether a given hand position is feasible
 
-function checkFeasibility(position, {
+function checkFeasible(position, {
   maxFingerStretch = 2,
   minFingerStretch = 0,
   maxHandStretch = 3
@@ -36,4 +36,4 @@ function checkFeasibility(position, {
   // if we survived this far then it is feasible
   return true
 }
-module.exports = checkFeasibility
+module.exports = checkFeasible

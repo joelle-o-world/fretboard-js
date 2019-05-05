@@ -1,10 +1,10 @@
 const HandPosition = require('../src/HandPosition')
 const randomHandPosition = require('../src/randomFeasibleHandPosition')
 const allFingerLiftMoves = require('../src/allFingerLiftMoves')
-const checkFeasibility = require('../src/checkFeasibility')
+const checkFeasible = require('../src/checkFeasible')
 
 let position1 = randomHandPosition()
-console.log('feasible:', checkFeasibility(position1))
+console.log('feasible:', checkFeasible(position1))
 
 console.log(position1)
 
