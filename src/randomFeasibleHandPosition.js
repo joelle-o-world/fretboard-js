@@ -68,8 +68,4 @@ function randomHandPosition({
   })
 }
 
-module.exports = {
-  randomHandPosition: randomHandPosition,
-//  getChord: require('./chord.js').getPitchSet,
-//  getPitchClassSet: require("./chord.js").getPitchClassSet,
-}
+module.exports = randomHandPosition

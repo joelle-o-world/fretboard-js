@@ -1,5 +1,5 @@
 const HandPosition = require('../src/HandPosition')
-const {randomHandPosition} = require('../src/guitar')
+const randomHandPosition = require('../src/randomFeasibleHandPosition')
 const allFingerLiftMoves = require('../src/allFingerLiftMoves')
 const checkFeasibility = require('../src/checkFeasibility')
 

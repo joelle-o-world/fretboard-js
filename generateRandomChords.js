@@ -1,4 +1,4 @@
-const guitar = require('./src/guitar')
+const randomHandPosition = require('./src/randomFeasibleHandPosition')
 const fretShift = require('./src/fretShift')
 //const Chord = require('./src/Chord')
 const fs = require('fs')
@@ -9,7 +9,7 @@ let lines = []
 
 const n = 10
 for(let i=0; i<n; i++) {
-  let shape = guitar.randomHandPosition()
+  let shape = randomHandPosition()
   for(let j=0; j<8; j++) {
     let position = fretShift.random(shape)
     if(position.lowestFret <= 0) {
@@ -18,9 +18,6 @@ for(let i=0; i<n; i++) {
     }
     let lily = lilypond.handPosition(position) + '1'
     lily += '^' + position.lilypondFretDiagram()
-  /*  let chord = Chord.fromOctaveProfile(guitar.getPitchClassSet(position))
-    if(chord != '?')
-      lily += ' _"(' + chord.print+')"'*/
 
     lines.push(lily, '\\bar "||"')
   }

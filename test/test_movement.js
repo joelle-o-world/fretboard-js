@@ -1,10 +1,10 @@
-const guitar = require('../src/guitar.js')
+const randomHandPosition = require('../src/randomFeasibleHandPosition')
 const HandPosition = require('../src/HandPosition')
 const { getReachableFrets,
         getReachableFingerPositions,
         singleFingerMoves} = require('../src/move')
 
-let position1 = guitar.randomHandPosition()
+let position1 = randomHandPosition()
 let position0 = {
   fingers:[
     {fret: null, string:null},

@@ -1,4 +1,3 @@
-const guitar = require('./src/guitar')
 const fretShift = require('./src/fretShift')
 //const Chord = require('./src/Chord')
 const lilypond = require('./src/lilypond')
