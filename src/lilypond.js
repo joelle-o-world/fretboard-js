@@ -28,11 +28,14 @@ function printPitch(midiPitchNumber, accidentalType='flat') {
 
 function handPositionToLilypond(position, tuning=standardEADGBE) {
   // get frets and fingers by string
-  let byString = position.fretsAndFingersByString().filter(o => o)
+  let byString = position.fretsAndFingersByString()
 
   // convert frets to pitches
   for(let string=0; string<byString.length; string++)
-    byString[string].pitch = tuning[string] + byString[string].fret
+    if(byString[string])
+      byString[string].pitch = tuning[string] + byString[string].fret
+
+  byString = byString.filter(o => o)
 
   let notes = byString.map(
     ({pitch, fingerNumber}) => printPitch(pitch) + '-' +

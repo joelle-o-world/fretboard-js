@@ -135,7 +135,7 @@ class HandPosition {
       let finger = this.fingers[n]
       let {fret, string} = finger
       if(fret != null && (!byString[string] || fret > byString[string].fret))
-        byString[finger.string] = {fret: fret, fingerNumber: n}
+        byString[string] = {fret: fret, fingerNumber: n}
     }
 
     return byString

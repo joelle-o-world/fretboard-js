@@ -12,7 +12,7 @@ function checkFeasibility(position, {
 
   // check adjacent finger stretches
   // check for finger overlaps
-  for(let n=1; n<position.fingers; n++) {
+  for(let n=1; n<position.fingers.length; n++) {
     let A = position.fingers[n-1].fret
     let B = position.fingers[n].fret
     let stretch = B-A
