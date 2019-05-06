@@ -3,8 +3,6 @@ const HandPosition = require("./HandPosition")
 const lp = require('./lilypond')
 const pitch = require('./pitch')
 
-const standardEADGBE = [40, 45, 50, 55, 59, 64]
-
 function randomHandPosition({
   numberOfFingers = 4,
   minFingerStretch = 0, // in frets

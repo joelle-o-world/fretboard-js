@@ -1,3 +1,5 @@
+const {standardEADGBE} = require('./tunings')
+
 class HandPosition {
   constructor({fingers, openStrings=[]}) {
     this.fingers = fingers // an array of finger positions

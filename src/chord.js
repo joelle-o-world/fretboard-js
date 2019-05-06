@@ -1,7 +1,7 @@
 const Chord = require('../lib/Chord')
 
 const pitch = require('./pitch')
-const standardEADGBE = [40, 45, 50, 55, 59, 64]
+const {standardEADGBE} = require('./tunings')
 
 
 function getPitchSet(handPosition, tuning=standardEADGBE) {

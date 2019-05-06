@@ -5,7 +5,7 @@ const {getPitchClassSet} = require('./chord')
 const comparePitchClassSets = require('./comparePitchClassSets').includes
 const Chord = require('../lib/Chord')
 
-const standardEADGBE = [40, 45, 50, 55, 59, 64]
+const {standardEADGBE} = require('./tunings')
 
 function *allMovesToChord(position1, chords, moveType=step, options={}) {
   if(chords.constructor != Array)
