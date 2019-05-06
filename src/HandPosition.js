@@ -114,6 +114,10 @@ class HandPosition {
     return list
   }
 
+  get numberOfEngagedFingers() {
+    return this.placedFingerNumbers.length
+  }
+
   // formatting
   fretsByString(numberOfStrings=6) {
     let out = new Array(numberOfStrings).fill(null)

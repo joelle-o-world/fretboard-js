@@ -30,6 +30,7 @@ function getPitchClassSet(handPosition, tuning=standardEADGBE) {
 }
 
 function getChord(handPosition, tuning = standardEADGBE) {
+  // get a Chord object which matches the hand position
   let pitchClassSet = getPitchClassSet(handPosition, tuning)
   return Chord.fromOctaveProfile(pitchClassSet)
 }
