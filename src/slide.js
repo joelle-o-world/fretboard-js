@@ -16,8 +16,12 @@ function checkSlide(A, B, options) {
   // Otherwise,
   return true
 }
+module.exports.check = checkSlide
 
 function* allSlides(position1, options={}) {
+  // NOTE: This function must yield the First Position (all first fret) first.
+  //        otherwise stepAndSlide.js will break.
+
   // destructure options and assign defaults
   let {
       minFingerStretch = 0,
@@ -27,11 +31,19 @@ function* allSlides(position1, options={}) {
   } = options
   let nFingers = position1.fingers.length
 
+  // find out which fingers are engaged with the fretboard.
   let engagedFingers = []
   for(let i=0; i<nFingers; i++)
     if(position1.fingers[i].fret)
       engagedFingers.push(i)
 
+  // if there are no fretted fingers, exit early yielding the empty position.
+  if(engagedFingers.length == 0) {
+    yield HandPosition.empty(nFingers)
+    return
+  }
+
+  // make a list of possible differences between fret numbers between fingers
   let stretchOpts = [count(1,numberOfFrets)]
   for(let i=1; i<engagedFingers.length; i++) {
     let dif = engagedFingers[i] - engagedFingers[i-1]
@@ -40,6 +52,7 @@ function* allSlides(position1, options={}) {
     stretchOpts[i] = count(min, max)
   }
 
+  // cycle combinations of fret number differences
   for(let stretches of cycle(...stretchOpts)) {
     let position2 = HandPosition.empty(nFingers)
     let fret = 0
@@ -52,13 +65,21 @@ function* allSlides(position1, options={}) {
       }
     }
 
-    if(checkFeasible(position2))
+    // yield only if feasible
+    if(checkFeasible(position2, options))
       yield position2
   }
 }
 module.exports.all = allSlides
 
+function listSlides(position1, options) {
+  return [...allSlides(position1, options)]
+}
+module.exports.list = listSlides
+
 function count(from, to) {
+  // PRIVATE METHOD
+  // produce an array with all the ingegers between `from` and `to`
   let list = []
   for(let i=from; i<=to; i++)
     list.push(i)
