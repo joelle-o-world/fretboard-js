@@ -26,6 +26,24 @@ function printPitch(midiPitchNumber, accidentalType='flat') {
     return letter + ','.repeat(-octave)
 }
 
+function fingeredPitch({p, finger}, noteValue) {
+  if(noteValue)
+    return printPitch(p) + noteValue.toString() + ' -' + (finger+1)
+  else
+    return printPitch(p) + ' -' + (finger+1)
+}
+
+function printNote(note, noteValue) {
+  if(note.constructor == Array)
+    return '<' + note.map(n => fingeredPitch(n)).join(' ') + '>' + noteValue
+  else
+    return fingeredPitch(note, noteValue)
+}
+
+function printSequence(sequence, noteValue='8') {
+  return sequence.map(note => printNote(note, noteValue)).join(' ')
+}
+
 function handPositionToLilypond(position, tuning=standardEADGBE) {
   // get frets and fingers by string
   let byString = position.fretsAndFingersByString()
@@ -81,5 +99,8 @@ function lilypondChordSheet(positions, tuning=standardEADGBE) {
 module.exports = {
   pitch: printPitch,
   handPosition: handPositionToLilypond,
-  sheet: lilypondChordSheet
+  sheet: lilypondChordSheet,
+  fingeredPitch: fingeredPitch,
+  note: printNote,
+  sequence: printSequence,
 }

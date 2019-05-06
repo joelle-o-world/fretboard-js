@@ -173,8 +173,8 @@ class HandPosition {
       .filter(o => o)
       .map((o, i) => ({
         p: o.fret + tuning[i],
-        finger: o.fingerNumber,
-        fingering: (o.fingerNumber == null ? 0 : o.fingerNumber+1).toString(),
+        finger: o.fingerNumber == null ? -1 : o.fingerNumber,
+        //fingering: (o.fingerNumber == null ? 0 : o.fingerNumber+1).toString(),
         string: i
       }))
   }
