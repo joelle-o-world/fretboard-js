@@ -5,7 +5,7 @@ const combinations = require('./combinations')
 const checkFeasible = require('./checkFeasible')
 
 
-function* allHandMoves(position1, options) {
+function* allSteps(position1, options) {
   let optionsByFinger = []
 
   let nPossibilities = 1
@@ -21,9 +21,9 @@ function* allHandMoves(position1, options) {
       yield position2.duplicate()
   }
 }
-module.exports = allHandMoves
+module.exports.all = allSteps
 
-function randomHandMove(position1, options) {
+function randomStep(position1, options) {
   let optionsByFinger = []
 
   let nPossibilities = 1
@@ -41,4 +41,4 @@ function randomHandMove(position1, options) {
 
   return position2.duplicate()
 }
-module.exports.random = randomHandMove
+module.exports.random = randomStep

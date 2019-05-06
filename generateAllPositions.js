@@ -1,11 +1,11 @@
 const HandPosition = require("./src/HandPosition")
-const allHandMoves = require('./src/allHandMoves')
+const step = require('./src/step')
 const lilypond = require("./src/lilypond")
 const fs = require('fs')
 const lilynode = require('lilynode')
 console.log(lilynode)
 
-let iterator = allHandMoves(HandPosition.empty())
+let iterator = step.all(HandPosition.empty())
 let positions = []
 
 let volume = 1
