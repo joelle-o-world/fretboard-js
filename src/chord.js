@@ -34,8 +34,25 @@ function getChord(handPosition, tuning = standardEADGBE) {
   return Chord.fromOctaveProfile(pitchClassSet)
 }
 
+function compareToChord(chord, position, tuning = standardEADGBE) {
+  if(chord.constructor == String)
+    chord = new Chord(chord)
+
+  let pcsPosition = getPitchClassSet(position, tuning)
+  let pcsChord = chord.octaveProfile
+
+  for(let p of pcsPosition) {
+    if(!pcsChord.includes(p))
+      return false
+  }
+
+  // Otherwise,
+  return true
+}
+
 module.exports = {
   getPitchSet: getPitchSet,
   getPitchClassSet: getPitchClassSet,
   getChord: getChord,
+  compareToChord: compareToChord
 }
