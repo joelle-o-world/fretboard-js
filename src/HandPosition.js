@@ -167,5 +167,16 @@ class HandPosition {
 
     return "\\markup { \\fret-diagram-terse #\"" + byString.join(';')+';' + "\" }"
   }
+
+  pitches(tuning=standardEADGBE) {
+    return this.fretsAndFingersByString(tuning.length)
+      .filter(o => o)
+      .map((o, i) => ({
+        p: o.fret + tuning[i],
+        finger: o.fingerNumber,
+        fingering: (o.fingerNumber == null ? 0 : o.fingerNumber+1).toString(),
+        string: i
+      }))
+  }
 }
 module.exports = HandPosition
