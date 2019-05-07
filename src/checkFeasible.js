@@ -4,6 +4,7 @@ function checkFeasible(position, {
   maxFingerStretch = 2,
   minFingerStretch = 0,
   maxHandStretch = 3,
+  littleFingerRule = true,
   forbidStringSharing = true,
 }={}) {
   // check overall hand stretch
@@ -24,7 +25,7 @@ function checkFeasible(position, {
   }
 
   // check for fingers on the same string
-  if(!forbidStringSharing){
+  if(!forbidStringSharing) {
     let stringTaken = []
     for(let {string} of position.fingers) {
       if(string == null)
@@ -34,7 +35,23 @@ function checkFeasible(position, {
       else
         stringTaken[string] = true
     }
-}
+  }
+
+  if(littleFingerRule) {
+    let littleFinger = position.fingers[position.fingers.length-1]
+    let otherFinger
+    for(let i=position.fingers.length-2; i>=0; i--)
+      if(position.fingers[i].fret) {
+        otherFinger = position.fingers[i]
+        break
+      }
+
+    if(
+      otherFinger &&
+      littleFinger.fret == otherFinger.fret &&
+      littleFinger.string <= otherFinger.string
+    ) return false
+  }
 
   // if we survived this far then it is feasible
   return true
