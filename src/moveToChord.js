@@ -8,6 +8,7 @@ const Chord = require('../lib/Chord')
 const {standardEADGBE} = require('./tunings')
 
 function *allMovesToChord(position1, chords, moveType=step, options={}) {
+
   if(chords.constructor != Array)
     chords = [chords]
   chordPCSs = chords.map(c => {
@@ -17,13 +18,17 @@ function *allMovesToChord(position1, chords, moveType=step, options={}) {
   })
 
   let {
-    tuning = standardEADGBE
+    tuning = standardEADGBE,
+    minPCSSize = 2
   } = options
 
   for(let position2 of (moveType).all(position1, options)) {
     let positionPCS = getPitchClassSet(position2, tuning)
     for(let i=0; i<chords.length; i++)
-      if(comparePitchClassSets(chordPCSs[i], positionPCS))
+      if(
+        positionPCS.length >= minPCSSize &&
+        comparePitchClassSets(chordPCSs[i], positionPCS)
+      )
         yield {
           position: position2,
           chordIndex: i,

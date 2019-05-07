@@ -104,6 +104,7 @@ function wrap(...lines) {
     "\\override TextScript.size = #'1.5",
     "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
     "\\absolute {",
+    "\\tempo \"Largo\"",
     "\t\\clef \"treble_8\"",
     ...lines,
     "}}",

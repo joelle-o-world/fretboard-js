@@ -10,18 +10,10 @@ console.clear()
 
 
 let {positions, chords} = walkThroughBach(
-  8,
+  64,
   undefined,
   step,
-  {
-    filter: pos => {
-      //console.log(pos.numberOfEngagedFingers >= 2)
-      return pos.numberOfEngagedFingers >= 2
-    }
-  }
 )
-
-console.log(positions)
 
 let notes = [
   //'\\time 6/8',
@@ -31,7 +23,6 @@ if(positions) {
 
     let position = positions[i]
     let pitches = position.pitches().map(p => lilypond.pitch(p.p))
-    console.log(chords[i], pitches)
     let bar = lilypond.sequence(
       arp(
         position,
@@ -40,19 +31,24 @@ if(positions) {
         undefined,
         i * 16
       ), 8)
-    bar[0] += ' ^"('+chords[i]+')"'
+    /*let slurLength = 4
+    for(let b=0; b<bar.length; b+=slurLength) {
+      bar[b] += '\\('
+      bar[b+slurLength-1] += '\\)'
+    }*/
+    //for(let b in bar)
+    //  bar[b] += '\\laissezVibrer'
+    bar[0] += ' _"('+chords[i]+')"'
     bar[0] += ' ^'+position.lilypondFretDiagram(6)
     notes.push(...bar)
-    console.log(position, bar)
   }
 
 
 
   let lily = notes.join(' ')
   //let lily = lilypond.sheet(positions)
-
-  fs.writeFileSync('./output/bach.ly', lilypond.wrap(lily))
+  let path = './output/bach.ly'
+  fs.writeFileSync(path, lilypond.wrap(lily))
+  console.log('written to', path)
 } else
   console.log("No solution found :(")
-
-console.log(chords)

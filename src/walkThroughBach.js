@@ -32,7 +32,9 @@ function walkThroughBach(
         chordChoices = bach.all
 
       let lastPosition = positions[i-1] || position0
-      let choices = moveToChord.list(lastPosition, chordChoices, moveType, options)
+      let choices = moveToChord.list(
+        lastPosition, chordChoices, moveType, options
+      )
       choicesSequence[i] = choices
         //.map(choice => choice.position)
         .sort(() => Math.random()*2-1)
