@@ -39,7 +39,10 @@ function arpeggiate(
       pattern[i] = pattern[i].filter((n ,j) => pattern[i].indexOf(n) == j)
 
   if(offset)
-    pattern = [...pattern.slice(offset, pattern.length), ...pattern.slice(0, offset)]
+    pattern = [
+      ...pattern.slice(offset%pattern.length, pattern.length),
+      ...pattern.slice(0, offset%pattern.length)
+    ]
 
   if(period)
     pattern = pattern.slice(0, period)
