@@ -169,14 +169,18 @@ class HandPosition {
   }
 
   pitches(tuning=standardEADGBE) {
-    return this.fretsAndFingersByString(tuning.length)
-      .filter(o => o)
-      .map((o, i) => ({
-        p: o.fret + tuning[i],
-        finger: o.fingerNumber == null ? -1 : o.fingerNumber,
-        //fingering: (o.fingerNumber == null ? 0 : o.fingerNumber+1).toString(),
-        string: i
-      }))
+    let list = []
+    let byString = this.fretsAndFingersByString(tuning.length)
+    for(let i in byString) {
+      if(byString[i])
+        list.push({
+          p: byString[i].fret + tuning[i],
+          finger: byString[i].fingerNumber == null ? -1 : byString[i].fingerNumber,
+          string: i
+        })
+    }
+
+    return list.sort((A, B) => B.p - A.p)
   }
 }
 module.exports = HandPosition

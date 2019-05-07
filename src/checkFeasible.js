@@ -3,7 +3,8 @@
 function checkFeasible(position, {
   maxFingerStretch = 2,
   minFingerStretch = 0,
-  maxHandStretch = 3
+  maxHandStretch = 3,
+  forbidStringSharing = true,
 }={}) {
   // check overall hand stretch
   let width = position.width
@@ -23,17 +24,26 @@ function checkFeasible(position, {
   }
 
   // check for fingers on the same string
-  let stringTaken = []
-  for(let {string} of position.fingers) {
-    if(string == null)
-      continue
-    else if(stringTaken[string])
-      return false
-    else
-      stringTaken[string] = true
-  }
+  if(!forbidStringSharing){
+    let stringTaken = []
+    for(let {string} of position.fingers) {
+      if(string == null)
+        continue
+      else if(stringTaken[string])
+        return false
+      else
+        stringTaken[string] = true
+    }
+}
 
   // if we survived this far then it is feasible
   return true
 }
 module.exports = checkFeasible
+
+function checkIntermediaryFeasible(position, options) {
+  let options2 = {}
+  Object.assign(options2, options, {forbidStringSharing: false})
+  return checkFeasible(position, options2)
+}
+module.exports.intermediary = checkIntermediaryFeasible

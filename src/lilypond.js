@@ -41,7 +41,7 @@ function printNote(note, noteValue) {
 }
 
 function printSequence(sequence, noteValue='8') {
-  return sequence.map(note => printNote(note, noteValue)).join(' ')
+  return sequence.map(note => printNote(note, noteValue))
 }
 
 function handPositionToLilypond(position, tuning=standardEADGBE) {
@@ -96,6 +96,24 @@ function lilypondChordSheet(positions, tuning=standardEADGBE) {
   return lines.join('\n')
 }
 
+function wrap(...lines) {
+  lines = [
+    "\\version \"2.18.2\"",
+    "\\score {",
+    "\\new Voice {",
+    "\\override TextScript.size = #'1.5",
+    "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
+    "\\absolute {",
+    "\t\\clef \"treble_8\"",
+    ...lines,
+    "}}",
+    "\\layout {}",
+    "\\midi {}",
+    "}",
+  ]
+  return lines.join('\n')
+}
+
 module.exports = {
   pitch: printPitch,
   handPosition: handPositionToLilypond,
@@ -103,4 +121,5 @@ module.exports = {
   fingeredPitch: fingeredPitch,
   note: printNote,
   sequence: printSequence,
+  wrap: wrap,
 }

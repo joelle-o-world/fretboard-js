@@ -1,5 +1,6 @@
 const HandPosition = require('./HandPosition')
 const {getHighestFrettedFinger, getLowestFrettedFinger} = require('./range.js')
+const checkFeasible = require('./checkFeasible')
 
 function singleFingerMoves(handPosition, options) {
   let list = []
@@ -40,11 +41,16 @@ function getReachableFingerPositions(handPosition, fingerNumber, options={}) {
   let frets = getReachableFrets(handPosition, fingerNumber, options)
   let {numberOfStrings = 6} = options
 
+  let position2 = handPosition.duplicate()
   let list = []
   for(let string=0; string<numberOfStrings; string++) {
-    for(let fret of frets)
-      list.push({fret: fret, string:string})
+    for(let fret of frets) {
+      position2.fingers[fingerNumber] = {fret: fret, string:string}
+      if(checkFeasible.intermediary(position2, options))
+        list.push({fret: fret, string:string})
+    }
   }
+
   return list
 }
 module.exports.getReachableFingerPositions = getReachableFingerPositions

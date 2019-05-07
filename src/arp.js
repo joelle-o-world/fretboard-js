@@ -1,7 +1,6 @@
 //const lilyNote = require('./lilypond').fingeredPitch
 
 const modes = [
-  n => [0, n-1, n-2, n-1],
 
   n => {
     let list = [0]
@@ -10,9 +9,10 @@ const modes = [
     return list
   },
 
-  n => {
+  /*n => {
     list = []
-    for(let i=0; i<n; i++) {
+    let i=0
+    while(i<n) {
       list.push(i)
       if(i%2)
         i--
@@ -20,7 +20,7 @@ const modes = [
         i += 2
     }
     return list
-  }
+  }*/
 ]
 
 function arpeggiate(

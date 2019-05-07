@@ -1,18 +1,21 @@
 const moveToChord = require('./moveToChord')
 const randomHandPosition = require('./randomFeasibleHandPosition')
 const HandPosition = require('./HandPosition')
+const stepAndSlide = require('./stepAndSlide')
+const includeReleventOpenStrings = require('./includeReleventOpenStrings')
 
 function walkThroughChords(
   chords,
   position0 = randomHandPosition(),
-  moveType,
+  moveType = stepAndSlide,
   options={},
 ) {
   let sequence = []
   let choicesSequence = []
 
   let {
-    filter = null
+    filter = null,
+    tuning
   } = options
 
 
@@ -23,7 +26,7 @@ function walkThroughChords(
       let lastPosition = sequence[i-1] || position0
       let choices = moveToChord.list(lastPosition, chords[i], moveType, options)
       choicesSequence[i] = choices
-        .map(choice => choice.position)
+        .map(choice => includeReleventOpenStrings(chords[i], choice.position))
         .sort(() => Math.random()*2-1)
       if(filter)
         choicesSequence[i] = choicesSequence[i].filter(filter)
@@ -39,6 +42,10 @@ function walkThroughChords(
       return null
     }
   }
+
+  /*for(let i in sequence) {
+    sequence[i] = includeReleventOpenStrings(chords[i], sequence[i])
+  }*/
 
   return sequence
 }

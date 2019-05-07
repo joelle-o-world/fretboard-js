@@ -1,16 +1,17 @@
 const walkThroughChords = require('../src/walkThroughChords')
 const lilypond = require('../src/lilypond')
 const fs = require('fs')
+const slide = require('../src/slide')
 
 console.clear()
 
 let sequence = walkThroughChords(
-  ['C', 'Am', "F", "G"],
+  ['C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",'C', 'Am', "F", "G",],
   undefined,
-  undefined,
+  slide,
   {
     filter: pos => {
-      return pos.numberOfEngagedFingers >= 2
+      return pos.numberOfEngagedFingers >= 3
     }
   }
 )
