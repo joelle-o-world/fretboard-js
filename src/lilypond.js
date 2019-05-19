@@ -1,6 +1,7 @@
 const pitch = require('./pitch')
 const {standardEADGBE} = require('./tunings')
 const {getChord} = require('./chord')
+const romanNumeral = require('roman-numerals').toRoman
 
 const pitchclasses_flat = [
   'c', 'des', 'd', 'ees', 'e', 'f', 'ges', 'g', 'aes', 'a', 'bes', 'b']
@@ -44,7 +45,11 @@ function printSequence(sequence, noteValue='8') {
   return sequence.map(note => printNote(note, noteValue))
 }
 
-function handPositionToLilypond(position, tuning=standardEADGBE) {
+function handPositionToLilypond(
+  position,
+  tuning=standardEADGBE,
+  fingerings=true,
+) {
   // get frets and fingers by string
   let byString = position.fretsAndFingersByString()
 
@@ -56,8 +61,12 @@ function handPositionToLilypond(position, tuning=standardEADGBE) {
   byString = byString.filter(o => o)
 
   let notes = byString.map(
-    ({pitch, fingerNumber}) => printPitch(pitch) + '-' +
-                                (fingerNumber!=null ? fingerNumber+1 : '0')
+    ({pitch, fingerNumber}) => {
+      let str = printPitch(pitch)
+      if(fingerings)
+        str += '-' + (fingerNumber!=null ? fingerNumber+1 : '0')
+      return str
+    }
   )
 
   if(notes.length)
@@ -79,40 +88,138 @@ function lilypondChordSheet(positions, tuning=standardEADGBE) {
     lines.push(lily, '\\bar "||"')
   }
 
-  lines = [
-    "\\version \"2.18.2\"",
-    "\\score {",
-    "\\new Voice {",
-    "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
-    "\\absolute {",
-    "\t\\clef \"treble_8\"",
-    ...lines,
-    "}}",
-    "\\layout {}",
-    "\\midi {}",
-    "}",
-  ]
-
-  return lines.join('\n')
+  return wrap(lines.join('\n'))
 }
 
 function wrap(...lines) {
-  lines = [
+  return wrapScore(...lines.map(l => wrapVoice(l)))
+}
+
+function wrapScore(...lines) {
+  return [
     "\\version \"2.18.2\"",
     "\\score {",
-    "\\new Voice {",
-    "\\override TextScript.size = #'1.5",
-    "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
-    "\\absolute {",
-    "\\tempo \"Largo\"",
-    "\t\\clef \"treble_8\"",
+    '<<',
     ...lines,
-    "}}",
+    '>>',
     "\\layout {}",
     "\\midi {}",
     "}",
+  ].join('\n')
+}
+
+function wrapVoice(line, {tab=false}={}) {
+  if(tab)
+    return [
+      "\\new TabStaff {",
+      "\\override TextScript.size = #'1.5",
+      "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
+      "\\absolute {",
+      line,
+      "}}",
+    ].join('\n')
+  else
+    return [
+      "\\new Voice {",
+      "\\override TextScript.size = #'1.5",
+      "\\override TextScript.fret-diagram-details.finger-code = #'in-dot",
+      "\\absolute {",
+      "\t\\clef \"treble_8\"",
+      line,
+      "}}",
+    ].join('\n')
+}
+
+function chordSheetWithBlanks(positions, tuning=standardEADGBE) {
+  // Generate lilypond source code for a chord sheet of a given set of positions
+  let lines = []
+  let n = 0
+  let m = 0
+  for(let position of positions) {
+    let lily = handPositionToLilypond(position, tuning) + '1' // chord as minim
+    //lily += '^' + position.lilypondFretDiagram()
+    let chord = getChord(position, tuning)
+    if(chord)
+      lily += '^"' + chord.print + '"'
+    if(++n >= 4) {
+      lily += '\n\\break\n'
+      n = 0
+      if(++m >= 4) {
+        lily += '\n\\pageBreak\n'
+        m = 0
+      }
+    }
+    lines.push(lily)
+  }
+
+  let blankLines = lines.map(()=>'s1')
+
+  return wrap(lines.join('\n'), blankLines.join('\n'))
+}
+
+function pabloChordSheet(positions, tuning=standardEADGBE, {
+  diagrams=true,
+  noteValue=1,
+  blankStave=false,
+  tab=false
+}={}) {
+  // Generate lilypond source code for a chord sheet of a given set of positions
+  let lines = []
+  let blankLines = []
+  let n = 0
+  let m = 0
+  let lastPosition = null
+  for(let i=0; i<positions.length; i++) {
+    let position = positions[i]
+    let lily = handPositionToLilypond(position, tuning) + noteValue
+    lily = "\\set TabStaff.minimumFret = #"+position.playingPosition + '\n'+lily
+    if(diagrams)
+      lily += '^' + position.lilypondFretDiagram()
+    let playingPosition = position.playingPosition
+    if(playingPosition && position.fingers[0].fret)
+      if(!lastPosition || lastPosition.playingPosition != playingPosition) {
+        lily = '\n\\override TextSpanner.bound-details.left.text = \\markup { \\bold ' + romanNumeral(playingPosition) + ' }\n' + lily
+        lily += ' \\startTextSpan'
+      }
+
+
+    if(!positions[i+1]
+      || positions[i+1].playingPosition != playingPosition
+    ) {
+      lily += ' \\stopTextSpan'
+    }
+
+    let chord = getChord(position, tuning)
+    n += 1/noteValue
+    if(n >= 4) {
+      lily += '\n\\break\n'
+      n = 0
+      if(++m >= 4) {
+        lily += '\n\\pageBreak\n'
+        m = 0
+      }
+    }
+    lines.push(lily)
+    blankLines.push('s'+noteValue)
+
+    lastPosition = position
+  }
+
+  let staves = [
+    wrapVoice(lines.join('\n')),
   ]
-  return lines.join('\n')
+
+  if(tab) {
+    staves.push(wrapVoice(lines.join('\n'), {tab:true}))
+  }
+
+  if(blankStave) {
+    staves.push(
+      wrapVoice(blankLines.join('\n'))
+    )
+  }
+
+  return wrapScore(...staves)
 }
 
 module.exports = {
@@ -123,4 +230,6 @@ module.exports = {
   note: printNote,
   sequence: printSequence,
   wrap: wrap,
+  sheetWithBlanks: chordSheetWithBlanks,
+  pabloSheet: pabloChordSheet,
 }

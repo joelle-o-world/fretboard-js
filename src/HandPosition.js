@@ -65,29 +65,45 @@ class HandPosition {
     return true
   }
   get lowestFrettedFinger() {
-    for(let finger of this.fingers)
-      if(finger.fret != null)
-        return finger
+    for(let i=0; i<this.fingers.length; i++)
+      if(this.fingers[i].fret != null)
+        return i
+
+    // Otherwise,
+    return null
   }
   get highestFrettedFinger() {
     for(let i=this.fingers.length-1; i >= 0; i--)
       if(this.fingers[i].fret != null)
-        return this.fingers[i]
+        return i
+
+    // Otherwise,
+    return null
   }
 
   get lowestFret() {
     let finger = this.lowestFrettedFinger
-    if(finger)
-      return finger.fret
+    if(finger != null)
+      return this.fingers[finger].fret
     else
       return null
   }
   get highestFret() {
     let finger = this.highestFrettedFinger
-    if(finger)
-      return finger.fret
+    if(finger != null)
+      return this.fingers[finger].fret
     else
       return null
+  }
+
+  get playingPosition() {
+    let lowestFinger = this.lowestFrettedFinger
+    let lowestFret = this.lowestFret
+
+    if(lowestFret == null || lowestFinger == null)
+      return null
+    else
+      return lowestFret
   }
 
   get width() {
