@@ -1,6 +1,6 @@
 {
   "name": "fretboard",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A javascript library for exploring the combinatorix of fretted instruments",
   "main": "src/index.js",
   "directories": {
