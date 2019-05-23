@@ -51,7 +51,7 @@ function handPositionToLilypond(
   fingerings=true,
 ) {
   // get frets and fingers by string
-  let byString = position.fretsAndFingersByString()
+  let byString = position.fretsAndFingersByString(tuning.length)
 
   // convert frets to pitches
   for(let string=0; string<byString.length; string++)
@@ -161,7 +161,8 @@ function pabloChordSheet(positions, tuning=standardEADGBE, {
   diagrams=true,
   noteValue=1,
   blankStave=false,
-  tab=false
+  tab=false,
+  strum=false,
 }={}) {
   // Generate lilypond source code for a chord sheet of a given set of positions
   let lines = []
@@ -172,9 +173,13 @@ function pabloChordSheet(positions, tuning=standardEADGBE, {
   for(let i=0; i<positions.length; i++) {
     let position = positions[i]
     let lily = handPositionToLilypond(position, tuning) + noteValue
-    lily = "\\set TabStaff.minimumFret = #"+position.playingPosition + '\n'+lily
+    if(tab)
+      lily = "\\set TabStaff.minimumFret = #"
+        + position.playingPosition + '\n'+lily
+    if(strum)
+      lily += '\\arpeggio'
     if(diagrams)
-      lily += '^' + position.lilypondFretDiagram()
+      lily += '^' + position.lilypondFretDiagram(tuning.length)
     let playingPosition = position.playingPosition
     if(playingPosition && position.fingers[0].fret)
       if(!lastPosition || lastPosition.playingPosition != playingPosition) {

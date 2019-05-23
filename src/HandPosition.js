@@ -136,6 +136,15 @@ class HandPosition {
     return this.placedFingerNumbers.length
   }
 
+  getEngagedStrings(numberOfStrings=6) {
+    let byString = this.fretsByString(numberOfStrings)
+    let list = []
+    for(let i=0; i<byString.length; i++)
+      if(byString[i] != null)
+        list.push(i)
+    return list
+  }
+
   // formatting
   fretsByString(numberOfStrings=6) {
     let out = new Array(numberOfStrings).fill(null)

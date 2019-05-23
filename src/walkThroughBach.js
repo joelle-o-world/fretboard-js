@@ -60,7 +60,7 @@ function walkThroughBach(
 
   for(let i in positions) {
     positions[i] = includeReleventOpenStrings(
-      chords[i], positions[i]
+      chords[i], positions[i], tuning,
     )
   }
 
