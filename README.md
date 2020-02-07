@@ -98,7 +98,7 @@ These rules are made computationally explicit in `src/checkFeasibility.js` in th
 ## Movement between hand positions.
 Having defined a (very large) set of feasible hand positions, we will want to know next how to progress from position to position. Here we encounter a problem even more subjective than the last (§2). The ease with which a hand can move from one position to another is dependent not only on the anatomy, skill and determination of the performer but also on other factors such as how much time time they have to make make the transition. As before, I have approached this hard, subjective problem by substituting it with a simpler, computable problem bound by well-defined rules. Again, a special term, *feasible step*, is loaded with a formal meaning.
 
-A movement between two hand positions (from **A**, to **B**) is said to be a *feasible step* if it meets all of the following criteria:
+### A movement between two hand positions (from **A**, to **B**) is said to be a *feasible step* if it meets all of the following criteria:
 
 1. Both A and B are *feasible hand positions*. (This is easily tested using `checkFeasible.js`)
 
@@ -115,7 +115,7 @@ Whereas the set of *feasible positions* is an overestimate (there are some ‘fe
 
 An important class of movements which are omitted from the set of feasible steps are those where a finger is slid from one fret to another without being disengaged from the string. This technique is called a slide, or portmanteau. It would be a shame not to include this characteristic gesture of guitar playing in this software. They are included using another name *feasible slides*.
 
-For a movement between two hand positions (from **A**, to **B**) to be a feasible slide, it must meet each of the following criteria:
+### For a movement between two hand positions (from **A**, to **B**) to be a feasible slide, it must meet each of the following criteria:
 
 1. **A** and **B** must both be *feasible hand positions*.
 
@@ -129,7 +129,7 @@ For a movement between two hand positions (from **A**, to **B**) to be a feasibl
 
 The rules defining a *feasible slide* are translated to javascript in *src/slide.js*.
 
-Observations:
+### Observations:
 1. The steps and slides defined above are both reversible processes. Ie, if you can step from one position to another then it is always possible to step back.
 
 2. We can define a compound movement made up of a step followed slide, this fills in many of the gaps which make the set of feasible steps an underestimate. (See src/stepAndSlide.js in the source code.)
@@ -145,3 +145,28 @@ Observations:
 7. From the empty position there is only one position accessible by a feasible slide : the empty position.
 
 8. By feeding the output of randomHandMove() back into its input, we can generate a random walk around the fretboard which ought to be playable by a guitarist.
+
+## Use in conjunction with a harmony transition network inducted from Bach chorales.
+A **transition network** (also known as a finite state automata or finite state machine) is a type of directed graph which can be used to model the behaviour of a discrete system. They consist a discrete, finite set of ‘states’ which are connected by **‘transitions’**. A familiar and intuitive example of a transition network is a tube map, which models a journey taken on the London Underground. In this example, the stations are the states and train-lines between them represent the transitions. According to the tube map, some sequences of consecutively visited stations are permitted, and others are not. For instance, we can travel through **Barbican ↝ Moorgate ↝ Old Street ↝ Angel** but not **Moorgate ↝ Angel ↝ Oxford Circus**.
+
+![tube map](images/tubemap.png)
+
+We have seen in previous sections that the calculations carried out by this software are a great deal more involved than a simple statistical model. However, once these calculations have been performed (for a given hand on a given fretboard with a given tuning) the software’s behaviour can be perfectly modelled by a transition network, albeit an extremely large one. The set of feasible hand positions are the discrete states of this network, while the feasible steps and slides are the transitions.
+
+A special version of the fretboard program has been integrated with a transition network which statistically models chord sequences in Bach. This was produced by analysing MIDI data for all 371 chorales in the Riemenschneider collection. Unfortunately this program made its analyses in ignorance of the key of each chorale, and so the progressions that it models have a tendency to modulate in quite a confusing manner.
+
+By superimposing these two transition networks atop one another it ought to be possible to generate music which is both comfortable to play and also has some degree of tonal harmonic continuity. In order to achieve this, it is necessary first to work out which states (hand positions) in the fretboard network correspond to which states (chord symbols) in the Bach network. This is done by calculating the pitch class set of each hand position (which naturally depends on the tuning of the strings) and comparing this to the pitch class sets implied by the chord symbols. Making these calculations in advance proves to be impractical because the fretboard network is so vast (containing millions of states). Instead, the association of hand positions and chord symbols is made on a transition-by-transition basis.
+
+## Composing music using this software.
+On the one hand, the software is capable of producing unlimited quantities of well notated musical material. This material is idiomatic in the sense that it is mechanically executable, however it is also lacking in several respects. The software is not at all concerned with rhythm, dynamics, articulation, or indeed anything to do with the player’s right hand. With the knowledge the material was at best 50% of a piece of music, I presented it to Pablo with an additional blank stave so that he might have creative freedom to compose those parameters that the computer ignored. I hoped to offer this material as a source a source of inspiration rather than as a prescriptive and difficult piece of music (as would very easily become the case given the software’s rigorous attention to fingerings and sometimes optimistic assumptions about what it can expect from the performer.) This correspondence with Pablo also prompted a few revisions to the rules of feasibility and the notation.
+
+## Problems, possible applications and further research.
+There remain a few notational issues in this software. Some are minor and easily resolved: it often reiterates fingering numbers unnecessarily and is not intelligent in its spelling of accidentals. Others require more thought: in order for the project to develop further a more nuanced sub-routine for type-setting rhythms will become necessary; also the possibility for writing multiple voices may be desirable if it is to be put to use composing contrapuntal guitar music.
+
+Other problems have to do with the limited scope of the project. It currently has no support for barre chords or for other techniques central to string instruments such as harmonics, hammer-ons/pull-offs or pitch-bends. In particular, the total omission of the players second non-fingerboard hand surely also ought to be addressed moving forwards.
+
+Problems aside, a few practical applications of this code suggest themselves. It might be possible to extend the program so that it can automatically adapt music for performance on a fretted instruments. It could produce reductions from keyboard or orchestral arrangements. Alternatively it could be used to transcribe fretted- instrument music from one tuning to another. Another possible application could take the form of a software plug-in for programs like Sibelius or Finale, in order to flag up errors and unrealistic expectations made by composers, or to automatically work out suggested fingerings for their work.
+
+Given that most music for instruments in the violin family and other non-fretted string instruments is generally written for the tempered chromatic scale, this software could readily be adapted to suit the needs of those instruments too. If the rules of feasibility were adapted for a continuous (rather than fretted) fingerboard then they could be used in complicated microtonal situations too.
+
+A rather fanciful future project I would like to pursue is to design a board game based on this software. Like a board game this software works in a domain consisting of discrete positions on a board and discrete moves between those states, all that is missing is some objective for the players of the game to play for. It seems dubious whether such a game would be any fun to play, but the real purpose of this project would be to subject it to an analysis using game theory. If computers could be taught to play the game against one another then this could become a novel source of generative music.
